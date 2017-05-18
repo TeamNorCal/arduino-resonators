@@ -165,20 +165,6 @@ void loop()
         // we have valid buffer of serial input
         char cmd = command[0];
         
-        for (int i = 0; i < 8; i++) {
-          int level = command[i+1]; 
-          if ((resonatorLevel[i] == 0) and (level != '0')) {
-            Serial.println("Deploy Resonator - case 1");
-          }
-          if ((resonatorLevel[i] !=0) and (level == '0')) {
-            Serial.println("Destroy Resonator - case 2");
-          }
-          
-          if (resonatorLevel[i] != level - '0') { // if resonator is not same as previous then update it
-            resonatorLevel[i] = level - '0'; 
-          }  
-        }
-        
         switch (cmd) {
             Color c;
             case '*':
@@ -188,24 +174,52 @@ void loop()
             case 'R':
             case 'e':
             case 'r':
-                owner = (cmd & CASE_MASK) == 'E' ? enlightened : resistance;
-                percent = getPercent(&command[1]);
-                uint8_t red, green, blue, white;
-                c = ToColor(0x00, 
-                        owner == enlightened ? 0xff : 0x00,
-                        owner == resistance ? 0xff : 0x00,
-                        0x00);
-                for (int i = 0; i < NUM_STRINGS; i++) {
-                    QueueType& animationQueue = animationQueues[i];
-                    animationQueue.setTo(&animations.movingPulse);
-                    unsigned int stateIdx = animationQueue.lastIdx();
-                    double initialPhase = ((double) i) / NUM_STRINGS;
-                    animations.movingPulse.init(now, states[i][stateIdx], strip, resonatorLevel[i], owner); //, initialPhase);
-                }
+                  
+                   int len;
+                   len = strlen(command);
+                   if (len == COMMAND_LENGTH) {
+                     owner = (cmd & CASE_MASK) == 'E' ? enlightened : resistance;
+                    percent = getPercent(&command[1]);
+                    uint8_t red, green, blue, white;
+                    c = ToColor(0x00, 
+                          owner == enlightened ? 0xff : 0x00,
+                          owner == resistance ? 0xff : 0x00,
+                          0x00);
+                  
+                          for (int i = 0; i < 8; i++) {
+                            int level = command[i+1]; 
+                            if ((resonatorLevel[i] == 0) and (level != '0')) {
+                            // Serial.println("Deploy Resonator - case 1");
+                            }
+                            if ((resonatorLevel[i] !=0) and (level == '0')) {
+                              //Serial.println("Destroy Resonator - case 2");
+                            }
+          
+                            if (resonatorLevel[i] != level - '0') { // if resonator is not same as previous then update it
+                            resonatorLevel[i] = level - '0'; 
+                            }  
+                          }
+                  
+                  
+                    for (int i = 0; i < NUM_STRINGS; i++) {
+                      QueueType& animationQueue = animationQueues[i];
+                      animationQueue.setTo(&animations.movingPulse);
+                      unsigned int stateIdx = animationQueue.lastIdx();
+                      double initialPhase = ((double) i) / NUM_STRINGS;
+                      animations.movingPulse.init(now, states[i][stateIdx], strip, resonatorLevel[i], owner); //, initialPhase);
+                    }
+                  } else {
+                    Serial.print("Invalid length of command \"");Serial.print(command);Serial.print("\": ");Serial.println(len, DEC);   
+                  }
                 break;
 
             case 'N':
                 owner = neutral;
+                
+                for (int i = 0; i < 9; i++) {
+                  resonatorLevel[i] = 0;
+                }
+                
                 percent = 20;
                 if (RGBW_SUPPORT) {
                     c = ToColor(0x00, 0x00, 0x00, 0xff);
@@ -224,6 +238,10 @@ void loop()
                 
             case 'n':
                 owner = neutral;
+                for (int i = 0; i < 9; i++) {
+                  resonatorLevel[i] = 0;
+                }
+                
                 percent = 20;
                 if (RGBW_SUPPORT) {
                     c = ToColor(0x00, 0x00, 0x00, 0xff);
