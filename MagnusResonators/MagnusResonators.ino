@@ -3,15 +3,15 @@
 #include <Adafruit_NeoPixel.h>
 #include <stdlib.h>
 #include <string.h>
-#include "animation.hpp"
-#include "circbuff.hpp"
+#include "/home/pi/dev/arduino-resonators/MagnusResonators/animation.hpp"
+#include "/home/pi/dev/arduino-resonators/MagnusResonators/circbuff.hpp"
 
 // first communication pin for neo pixel string
 const unsigned int BASE_PIN = 2;
 
 const unsigned int NUM_STRINGS = 8;
 
-const uint16_t LEDS_PER_STRAND = 50; // 120
+const uint16_t LEDS_PER_STRAND = 120; // 120
 const bool RGBW_SUPPORT = false; // true
 const unsigned int QUEUE_SIZE = 3;
 
@@ -58,7 +58,6 @@ const unsigned int PORTAL_STRENGTH_INDEX = 9;
 enum Direction { NORTH = 0, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST };
 //enum Ownership {  neutral = 0, enlightened, resistance };
 static int16_t resonatorLevel[8] = { 8,8,8,8,8,8,8,8 };
-enum SerialStatus { IDLE, IN_PROGRESS, COMMAND_COMPLETE };
 
 // Static animation implementations singleton
 Animations animations;

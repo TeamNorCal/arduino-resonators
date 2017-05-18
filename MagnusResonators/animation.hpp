@@ -1,6 +1,8 @@
 #include <Adafruit_NeoPixel.h>
 
 enum Ownership {  neutral = 0, enlightened, resistance, initial };
+enum SerialStatus { IDLE, IN_PROGRESS, COMMAND_COMPLETE };
+
 
 union Color {
     uint32_t w; // As packed value...w for 'word', lacking a better option
@@ -170,7 +172,7 @@ class DeployResonator : public Animation {
 
             unsigned long phase = (now - s.startTime) % AnimationDuration; // In ms
             uint16_t startPixel = phase * s.pixelsPerMs;
-            for (uint16_t i = 0; i < s.numPixels; i++) {
+            for (uint16_t i = 0; i < s.numPixels + 1; i++) {
                 if (i >= startPixel && i < startPixel + s.pulseLength) {
                   if (i > s.numPixels - 12) {  
                     if (s.color == 0) {
@@ -225,7 +227,7 @@ class MovingPulse : public Animation {
 
             unsigned long phase = (now - s.startTime) % AnimationDuration; // In ms
             uint16_t startPixel = phase * s.pixelsPerMs;
-            for (uint16_t i = 0; i < s.numPixels; i++) {
+            for (uint16_t i = 0; i < s.numPixels + 1; i++) {
                 if (i >= startPixel && i < startPixel + s.pulseLength) {
                   if (i > s.numPixels - 12) {  
                     if (s.color == 0) {
